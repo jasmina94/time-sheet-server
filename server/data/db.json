@@ -1,0 +1,25 @@
+{
+    "posts": [
+      {
+        "id": 1,
+        "title": "json-server",
+        "author": "typicode"
+      }
+    ],
+    "users": [
+      {
+        "id": 1,
+        "email": "j.eminovski@emakina.rs",
+        "password": "Pass",
+        "firstname": "Jasmina",
+        "lastname": "Eminovski"
+      },
+      {
+        "id": 2,
+        "email": "test@test.com",
+        "password": "test",
+        "firstname": "Test",
+        "lastname": "Test"
+      }
+    ]
+  }
