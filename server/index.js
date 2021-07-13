@@ -29,15 +29,15 @@ app.use(cors());
 app.use(express.json());
 dotenv.config();
 
-app.get('/api/ping', (req, res) => {
+app.get('/ping', (req, res) => {
   res.json({ message: 'Hello from server' });
 });
 
-app.get('/api/users', (req, res) => {
+app.get('/users', (req, res) => {
   res.json(ALL_USERS);
 });
 
-app.post('/auth', (req, res) => {
+app.post('/login', (req, res) => {
   const _email = req.body.email;
   const _pass = req.body.password;
   const user = ALL_USERS.find(x => x.email === _email && x.password === _pass);
