@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "email": "j.eminovski@emakina.rs",
+    "password": "jzNeu",
+    "firstname": "Jasmina",
+    "lastname": "Eminovski"
+  },
+  {
+    "id": 2,
+    "email": "test@test.com",
+    "password": "hLDMp",
+    "firstname": "Test",
+    "lastname": "Test"
+  },
+  {
+    "id": 3,
+    "email": "admin@admin.com",
+    "password": "admin",
+    "firstname": "Adminko",
+    "lastname": "Admin"
+  }
+]
