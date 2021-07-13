@@ -42,7 +42,7 @@ app.post('/auth', (req, res) => {
   const _pass = req.body.password;
   const user = ALL_USERS.find(x => x.email === _email && x.password === _pass);
   if (!user) {
-    res.status(401).json({ error: 'Unrecognized user!' })
+    res.status(401).json({ error: 'Credentials not valid!' })
   } else {
     const token = generateAccessToken(user.email);
     res.status(200).json({ token: token, user: user });
