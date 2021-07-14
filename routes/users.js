@@ -2,8 +2,11 @@ const jwt = require('jsonwebtoken');
 const helpers = require('../helpers/helpers');
 const bcrypt = require('bcrypt')
 
-const DEFAULT_SESSION_EXPIRATION = process.env.DEFAULT_EXPIRATION_TIME ? parseInt(process.env.DEFAULT_EXPIRATION_TIME) : 1234;
-const EXTENDED_SESSION_EXPIRATION = process.env.EXTENDED_EXPIRATION_TIME ? parseInt(process.env.EXTENDED_EXPIRATION_TIME) : 12345;
+const DEFAULT_SESSION_EXPIRATION = process.env.DEFAULT_EXPIRATION_TIME ? process.env.DEFAULT_EXPIRATION_TIME : '1234';
+const EXTENDED_SESSION_EXPIRATION = process.env.EXTENDED_EXPIRATION_TIME ? process.env.EXTENDED_EXPIRATION_TIME : '12345';
+
+console.log(DEFAULT_SESSION_EXPIRATION);
+
 
 const userRoutes = (app, fs) => {
     const dataPath = './data/users.json';
@@ -52,9 +55,7 @@ const userRoutes = (app, fs) => {
                             firstname: user.firstname,
                             lastname: user.lastname
                         };
-
-                        const token = jwt.sign({ userInfo: userInfo }, secret, { expiresIn: parseInt(ttl) });
-                        
+                        const token = jwt.sign({ userInfo: userInfo }, secret, { expiresIn: ttl });
                         res.status(200).json({ token: token });
 
                     } else {
