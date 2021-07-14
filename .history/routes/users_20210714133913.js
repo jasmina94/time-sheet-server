@@ -46,15 +46,9 @@ const userRoutes = (app, fs) => {
                             ? EXTENDED_SESSION_EXPIRATION
                             : DEFAULT_SESSION_EXPIRATION;
 
-                        const secret = process.env.TOKEN_SECRET;
-                        const userInfo = {
-                            email: user.email,
-                            firstname: user.firstname,
-                            lastname: user.lastname
-                        };
+                        const secret =  parseInt(process.env.TOKEN_SECRET);
+                        const token = jwt.sign(user.email, secret, { 'expiresIn': ttl });
 
-                        const token = jwt.sign({ userInfo: userInfo }, secret, { expiresIn: parseInt(ttl) });
-                        
                         res.status(200).json({ token: token });
 
                     } else {
@@ -67,7 +61,7 @@ const userRoutes = (app, fs) => {
     });
 
     // Verify token, return user information
-    app.get('/me', (req, res) => {
+    app.post('/me', (req, res) => {
         readFile(data => {
             const _authHeader = req.headers.authorization;
             if (_authHeader) {

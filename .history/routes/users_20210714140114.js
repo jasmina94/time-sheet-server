@@ -77,7 +77,7 @@ const userRoutes = (app, fs) => {
                         console.log(err);
                     } else {
                         console.log(data);
-                        res.status(200).json({ data: data });
+                        res.status(200).json({ userInfo: data });
                     }
                 });
             } else {

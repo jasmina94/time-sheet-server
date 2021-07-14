@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const helpers = require('../helpers/helpers');
 const bcrypt = require('bcrypt')
 
@@ -42,46 +41,19 @@ const userRoutes = (app, fs) => {
             } else {
                 bcrypt.compare(_pass, user.password, (err, result) => {
                     if (result) {
-                        const ttl = _remember
-                            ? EXTENDED_SESSION_EXPIRATION
-                            : DEFAULT_SESSION_EXPIRATION;
-
-                        const secret = process.env.TOKEN_SECRET;
-                        const userInfo = {
+                        const ttl = _remember ? EXTENDED_SESSION_EXPIRATION : DEFAULT_SESSION_EXPIRATION;
+                        const data = {
                             email: user.email,
-                            firstname: user.firstname,
-                            lastname: user.lastname
+                            expiry: new Date().getTime() + ttl
                         };
 
-                        const token = jwt.sign({ userInfo: userInfo }, secret, { expiresIn: parseInt(ttl) });
-                        
+                        const token = helpers.generateAccessToken(data);
                         res.status(200).json({ token: token });
-
                     } else {
                         console.log(err);
                         res.status(401).json({ error: 'Incorrect password!' });
                     }
                 });
-            }
-        }, true);
-    });
-
-    // Verify token, return user information
-    app.get('/me', (req, res) => {
-        readFile(data => {
-            const _authHeader = req.headers.authorization;
-            if (_authHeader) {
-                const token = _authHeader.split(' ')[1];   //Bearer jwtToken
-                jwt.verify(token, process.env.TOKEN_SECRET, (err, data) => {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        console.log(data);
-                        res.status(200).json({ data: data });
-                    }
-                });
-            } else {
-                res.status(401).json({ error: 'Unautenticated request!' });
             }
         }, true);
     });
@@ -110,16 +82,10 @@ const userRoutes = (app, fs) => {
                 const newPassword = helpers.makeRandomPassword(5);
                 const index = data.findIndex((item => item.email === _email));
 
-                bcrypt.hash(newPassword, 10, (err, hash) => {
-                    if (err) {
-                        console.log('Error while hashing new password...');
-                        res.status(500).json({ error: 'Server error!' });
-                    } else {
-                        data[index].password = hash;
-                        writeFile(JSON.stringify(data), () => {
-                            res.status(200).json({ password: newPassword });
-                        });
-                    }
+                data[index].password = newPassword;
+
+                writeFile(JSON.stringify(data), () => {
+                    res.status(200).json({ password: newPassword });
                 });
             }
         }, true);

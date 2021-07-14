@@ -1,5 +1,10 @@
+const fs = require('fs');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
 const helpers = {
    makeRandomPassword,
+   generateAccessToken
 };
 
 function makeRandomPassword(length) {
@@ -12,6 +17,10 @@ function makeRandomPassword(length) {
     }
 
     return result;
+};
+
+function generateAccessToken(data) {
+    return jwt.sign(data, process.env.TOKEN_SECRET);
 };
 
 module.exports = helpers;

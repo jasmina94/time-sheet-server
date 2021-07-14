@@ -2,7 +2,6 @@ const fs = require('fs');
 const cors = require('cors');
 const express = require('express');
 const dotenv = require('dotenv');
-const bcrypt = require('bcrypt')
 
 const app = express();
 app.use(cors());

@@ -1,5 +1,9 @@
+const fs = require('fs');
+const bcrypt = require('bcrypt');
+
 const helpers = {
    makeRandomPassword,
+   generateAccessToken
 };
 
 function makeRandomPassword(length) {

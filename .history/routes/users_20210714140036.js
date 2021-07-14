@@ -52,7 +52,6 @@ const userRoutes = (app, fs) => {
                             firstname: user.firstname,
                             lastname: user.lastname
                         };
-
                         const token = jwt.sign({ userInfo: userInfo }, secret, { expiresIn: parseInt(ttl) });
                         
                         res.status(200).json({ token: token });

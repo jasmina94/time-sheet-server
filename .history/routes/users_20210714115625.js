@@ -46,15 +46,7 @@ const userRoutes = (app, fs) => {
                             ? EXTENDED_SESSION_EXPIRATION
                             : DEFAULT_SESSION_EXPIRATION;
 
-                        const secret = process.env.TOKEN_SECRET;
-                        const userInfo = {
-                            email: user.email,
-                            firstname: user.firstname,
-                            lastname: user.lastname
-                        };
-
-                        const token = jwt.sign({ userInfo: userInfo }, secret, { expiresIn: parseInt(ttl) });
-                        
+                        const token = jwt.sign(data, process.env.TOKEN_SECRET, { expiresIn: ttl });
                         res.status(200).json({ token: token });
 
                     } else {
@@ -67,18 +59,13 @@ const userRoutes = (app, fs) => {
     });
 
     // Verify token, return user information
-    app.get('/me', (req, res) => {
+    app.post('/me', (req, res) => {
         readFile(data => {
             const _authHeader = req.headers.authorization;
             if (_authHeader) {
-                const token = _authHeader.split(' ')[1];   //Bearer jwtToken
-                jwt.verify(token, process.env.TOKEN_SECRET, (err, data) => {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        console.log(data);
-                        res.status(200).json({ data: data });
-                    }
+                const token = _authHeader.split(' ')[1]; //Bearer jwtToken
+                helpers.verifyAccessToken(token, () => {
+
                 });
             } else {
                 res.status(401).json({ error: 'Unautenticated request!' });

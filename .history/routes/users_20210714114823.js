@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const helpers = require('../helpers/helpers');
 const bcrypt = require('bcrypt')
 
@@ -46,15 +45,12 @@ const userRoutes = (app, fs) => {
                             ? EXTENDED_SESSION_EXPIRATION
                             : DEFAULT_SESSION_EXPIRATION;
 
-                        const secret = process.env.TOKEN_SECRET;
-                        const userInfo = {
+                        const data = {
                             email: user.email,
-                            firstname: user.firstname,
-                            lastname: user.lastname
+                            expiry: new Date().getTime() + ttl
                         };
 
-                        const token = jwt.sign({ userInfo: userInfo }, secret, { expiresIn: parseInt(ttl) });
-                        
+                        const token = helpers.generateAccessToken(user.email, ttl);
                         res.status(200).json({ token: token });
 
                     } else {
@@ -66,25 +62,10 @@ const userRoutes = (app, fs) => {
         }, true);
     });
 
-    // Verify token, return user information
-    app.get('/me', (req, res) => {
-        readFile(data => {
-            const _authHeader = req.headers.authorization;
-            if (_authHeader) {
-                const token = _authHeader.split(' ')[1];   //Bearer jwtToken
-                jwt.verify(token, process.env.TOKEN_SECRET, (err, data) => {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        console.log(data);
-                        res.status(200).json({ data: data });
-                    }
-                });
-            } else {
-                res.status(401).json({ error: 'Unautenticated request!' });
-            }
-        }, true);
-    });
+    // Return user
+    app.post('/me', (req, res) => {
+
+    })
 
 
     app.get('/users', (req, res) => {
