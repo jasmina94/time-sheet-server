@@ -66,7 +66,7 @@ const userRoutes = (app, fs) => {
         }, true);
     });
 
-    // Verify token, return user information
+    // Verify token, return user information, add comment
     app.get('/me', (req, res) => {
         readFile(data => {
             const _authHeader = req.headers.authorization;
