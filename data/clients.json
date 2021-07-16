@@ -1,0 +1,34 @@
+[
+    {
+        "id": 1,
+        "name": "ADAM Software NV",
+        "address": "Simple street 1",
+        "city": "Amsterdam",
+        "zip": "15xc",
+        "country": "Netherland"
+    },
+    {
+        "id": 2,
+        "name": "Clockwork",
+        "address": "Bond street 12",
+        "city": "London",
+        "zip": "222",
+        "country": "United Kingdom"
+    },
+    {
+        "id": 3,
+        "name": "Emperor Design",
+        "address": "Liberty st 101",
+        "city": "Paris",
+        "zip": "1222",
+        "country": "France"
+    },
+    {
+        "id": 4,
+        "name": "Emakina.RS",
+        "address": "Novosadskog sajma 2",
+        "city": "Novi Sad",
+        "zip": "21000",
+        "country": "Serbia"
+    }
+]

@@ -5,9 +5,6 @@ const bcrypt = require('bcrypt')
 const DEFAULT_SESSION_EXPIRATION = process.env.DEFAULT_EXPIRATION_TIME ? process.env.DEFAULT_EXPIRATION_TIME : '1234';
 const EXTENDED_SESSION_EXPIRATION = process.env.EXTENDED_EXPIRATION_TIME ? process.env.EXTENDED_EXPIRATION_TIME : '12345';
 
-console.log(DEFAULT_SESSION_EXPIRATION);
-
-
 const userRoutes = (app, fs) => {
     const dataPath = './data/users.json';
 
