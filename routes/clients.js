@@ -24,7 +24,7 @@ const clientRoutes = (app, fs) => {
     };
 
     app.get('/clients', (req, res) => {
-        readFile(data => {
+        readFile(clients => {
             const _authHeader = req.headers.authorization;
             if (_authHeader) {
                 const token = _authHeader.split(' ')[1]; 
@@ -32,8 +32,8 @@ const clientRoutes = (app, fs) => {
                     if (err) {
                         console.log(err);
                     } else {
-                        console.log(data);
-                        res.status(200).send({data: data});
+                        console.log(clients);
+                        res.status(200).send({data: clients});
                     }
                 });
             } else {
