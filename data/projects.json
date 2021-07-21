@@ -23,7 +23,7 @@
     {
         "id": 2,
         "name": "Neo",
-        "status": 1,
+        "status": 2,
         "description": "Very old project",
         "customer": {
             "id": 6,
