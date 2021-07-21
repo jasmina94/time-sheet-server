@@ -1,9 +1,4 @@
 const jwt = require('jsonwebtoken');
-const helpers = require('../helpers/helpers');
-const bcrypt = require('bcrypt')
-
-const DEFAULT_SESSION_EXPIRATION = process.env.DEFAULT_EXPIRATION_TIME ? process.env.DEFAULT_EXPIRATION_TIME : '1234';
-const EXTENDED_SESSION_EXPIRATION = process.env.EXTENDED_EXPIRATION_TIME ? process.env.EXTENDED_EXPIRATION_TIME : '12345';
 
 const userRoutes = (app, fs) => {
     const dataPath = './data/users.json';
@@ -28,142 +23,76 @@ const userRoutes = (app, fs) => {
         });
     };
 
-
-    app.post('/login', (req, res) => {
-        readFile(data => {
-            const _email = req.body.email;
-            const _pass = req.body.password;
-            const _remember = req.body.remember;
-
-            const user = data.find(x => x.email === _email);
-
-            if (!user) {
-                res.status(401).json({ error: 'User with given email does not exist!' })
-            } else {
-                bcrypt.compare(_pass, user.password, (err, result) => {
-                    if (result) {
-                        const ttl = _remember
-                            ? EXTENDED_SESSION_EXPIRATION
-                            : DEFAULT_SESSION_EXPIRATION;
-
-                        const secret = process.env.TOKEN_SECRET;
-                        const userInfo = {
-                            email: user.email,
-                            firstname: user.firstname,
-                            lastname: user.lastname
-                        };
-                        const token = jwt.sign({ userInfo: userInfo }, secret, { expiresIn: ttl });
-                        res.status(200).json({ token: token });
-
-                    } else {
-                        console.log(err);
-                        res.status(401).json({ error: 'Incorrect password!' });
-                    }
-                });
-            }
-        }, true);
-    });
-
-    // Verify token, return user information, add comment
-    app.get('/me', (req, res) => {
-        readFile(data => {
-            const _authHeader = req.headers.authorization;
-            if (_authHeader) {
-                const token = _authHeader.split(' ')[1];   //Bearer jwtToken
-                jwt.verify(token, process.env.TOKEN_SECRET, (err, data) => {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        console.log(data);
-                        res.status(200).json({ data: data });
-                    }
-                });
-            } else {
-                res.status(401).json({ error: 'Unautenticated request!' });
-            }
-        }, true);
-    });
-
-
+    // READ
     app.get('/users', (req, res) => {
-        fs.readFile(dataPath, 'utf8', (err, data) => {
-            if (err) {
-                throw err;
-            }
-
-            res.send(JSON.parse(data));
-        });
-    });
-
-
-    app.post('/password', (req, res) => {
-        readFile(data => {
-            const _email = req.body.email;
-            const user = data.find(x => x.email === _email);
-
-            if (!user) {
-                res.status(404).json({ error: `User with given email is not found: ${_email}` });
-            } else {
-
-                const newPassword = helpers.makeRandomPassword(5);
-                const index = data.findIndex((item => item.email === _email));
-
-                bcrypt.hash(newPassword, 10, (err, hash) => {
-                    if (err) {
-                        console.log('Error while hashing new password...');
-                        res.status(500).json({ error: 'Server error!' });
-                    } else {
-                        data[index].password = hash;
-                        writeFile(JSON.stringify(data), () => {
-                            res.status(200).json({ password: newPassword });
-                        });
-                    }
-                });
-            }
-        }, true);
-    });
-
-    app.post('/register', (req, res) => {
-        readFile(data => {
-            const newUserId = Date.now().toString();
-
-            // add the new user
-            data[newUserId.toString()] = req.body;
-
-            writeFile(JSON.stringify(data, null, 2), () => {
-                res.status(200).send('new user added');
+        const _authHeader = req.headers.authorization;
+        if (_authHeader) {
+            const token = _authHeader.split(' ')[1];
+            jwt.verify(token, process.env.TOKEN_SECRET, (err, data) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    readFile(data => {
+                        res.status(200).json({ data: data });
+                    }, true);
+                }
             });
-        }, true);
+        } else {
+            res.status(401).json({ error: 'Unautenticated request!' });
+        }
     });
 
 
     // UPDATE
     app.put('/users/:id', (req, res) => {
+        const _authHeader = req.headers.authorization;
+        if (_authHeader) {
+            const token = _authHeader.split(' ')[1];
+            jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    readFile(users => {
+                        const userId = req.params["id"];
+                        users[userId] = req.body;
 
-        readFile(data => {
+                        writeFile(JSON.stringify(users, null, 2), () => {
+                            res.status(200).send(`users id:${userId} updated`);
+                        });
 
-            // add the new user
-            const userId = req.params["id"];
-            data[userId] = req.body;
-
-            writeFile(JSON.stringify(data, null, 2), () => {
-                res.status(200).send(`users id:${userId} updated`);
+                        res.status(200).json({ data: users });
+                    }, true);
+                }
             });
-        }, true);
+        } else {
+            res.status(401).json({ error: 'Unautenticated request!' });
+        }
     });
 
 
     // DELETE
     app.delete('/users/:id', (req, res) => {
+        const _authHeader = req.headers.authorization;
+        if (_authHeader) {
+            const token = _authHeader.split(' ')[1];
+            jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    readFile(users => {
+                        const userId = req.params["id"];
+                        // DELETE DATA
+                        // delete users[userId];
 
-        readFile(data => {
-            const userId = req.params["id"];
-            delete data[userId];
-
-            writeFile(JSON.stringify(data, null, 2), () => {
-                res.status(200).send(`users id:${userId} removed`);
+                        writeFile(JSON.stringify(data, null, 2), () => {
+                            res.status(200).send(`users id:${userId} removed`);
+                        });
+                    }, true);
+                }
             });
-        }, true);
+        } else {
+            res.status(401).json({ error: 'Unautenticated request!' });
+        }
     });
 };
 

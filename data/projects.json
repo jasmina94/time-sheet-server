@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1,
+        "name": "Rhea",
+        "status": 1,
+        "description": "Very cool project",
+        "customer": {
+            "id": 7,
+            "name": "Newy",
+            "address": "New Newy",
+            "city": "Newy place",
+            "zip": "101",
+            "country": "AX"
+        },
+        "lead": {
+            "id": 1,
+            "email": "j.eminovski@emakina.rs",
+            "password": "$2b$10$MXWJFXRPhQz4HqzBP3YOouO1izeAyMDU6YGJlIdtFr/FgXUuZinXW",
+            "firstname": "Jasmina",
+            "lastname": "Eminovski"
+        }
+    },
+    {
+        "id": 2,
+        "name": "Neo",
+        "status": 1,
+        "description": "Very old project",
+        "customer": {
+            "id": 6,
+            "name": "Adam client",
+            "address": "Bond street 12",
+            "city": "Bern",
+            "zip": "222",
+            "country": "SE"
+        },
+        "lead": {
+            "id": 1,
+            "email": "j.eminovski@emakina.rs",
+            "password": "$2b$10$MXWJFXRPhQz4HqzBP3YOouO1izeAyMDU6YGJlIdtFr/FgXUuZinXW",
+            "firstname": "Jasmina",
+            "lastname": "Eminovski"
+        }
+    }
+]
