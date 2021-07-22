@@ -53,9 +53,9 @@ const clientRoutes = (app, fs) => {
                     res.status(401).json({ error: 'Unautenticated request!' });
                 } else {
                     readFile(clients => {
-                        const nexId = Math.max.apply(Math, clients.map(x => x.id)) + 1;
+                        const nextId = Math.max.apply(Math, clients.map(x => x.id)) + 1;
                         const newClient = {
-                            id: nexId,
+                            id: nextId,
                             name: req.body.name,
                             address: req.body.address,
                             city: req.body.city,
@@ -97,7 +97,7 @@ const clientRoutes = (app, fs) => {
 
                         const index = clients.findIndex((obj => obj.id === parseInt(id)));
 
-                        console.log("Before update: ", clients[index])
+                        console.log("Before update: ", clients[index]);
 
                         clients[index].name = name;
                         clients[index].address = address;
