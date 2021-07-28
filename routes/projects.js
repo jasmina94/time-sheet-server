@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const helpers = require('../helpers/helpers');
 
 const projectRoutes = (app, fs) => {
 
@@ -25,7 +26,7 @@ const projectRoutes = (app, fs) => {
     };
 
 
-    app.get('/projects', (req, res) => {
+    app.get('/projects/all', (req, res) => {
         const _authHeader = req.headers.authorization;
         if (_authHeader) {
             const token = _authHeader.split(' ')[1];
@@ -36,7 +37,29 @@ const projectRoutes = (app, fs) => {
                 } else {
                     readFile(projects => {
                         console.log(projects);
+
                         res.status(200).send({ data: projects });
+                    }, true);
+                }
+            })
+        } else {
+            res.status(401).json({ error: 'Unautenticated request!' });
+        }
+    });
+
+    app.get('/projects', (req, res) => {
+        const _authHeader = req.headers.authorization;
+        if (_authHeader) {
+            const token = _authHeader.split(' ')[1];
+            jwt.verify(token, process.env.TOKEN_SECRET, (err, data) => {
+                if (err) {
+                    console.log(err);
+                    res.status(401).json({ error: 'Unautenticated request!' });
+                } else {
+                    readFile(projects => {
+                        let result = helpers.queryData(projects, req.query.limit, req.query.page);
+
+                        res.status(200).send({ projects: result.data, numOfPages: result.numOfPages });
                     }, true);
                 }
             })
@@ -58,7 +81,7 @@ const projectRoutes = (app, fs) => {
                     const users = JSON.parse(fs.readFileSync('./data/users.json', { encoding: 'utf8', flag: 'r' }));
                     const customer = clients.filter(x => x.id === parseInt(req.body.customer))[0];
                     const lead = users.filter(x => x.id === parseInt(req.body.lead))[0];
-                    
+
                     readFile(projects => {
                         const nextId = Math.max.apply(Math, projects.map(x => x.id)) + 1;
                         const newProject = {

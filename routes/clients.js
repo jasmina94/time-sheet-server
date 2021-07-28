@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const helpers = require('../helpers/helpers');
 
 const clientRoutes = (app, fs) => {
     const dataPath = './data/clients.json';
@@ -23,7 +24,7 @@ const clientRoutes = (app, fs) => {
         });
     };
 
-    app.get('/clients', (req, res) => {
+    app.get('/clients/all', (req, res) => {
         const _authHeader = req.headers.authorization;
         if (_authHeader) {
             const token = _authHeader.split(' ')[1];
@@ -42,6 +43,26 @@ const clientRoutes = (app, fs) => {
             res.status(401).json({ error: 'Unautenticated request!' });
         }
     });
+
+    app.get('/clients', (req, res) => {
+        const _authHeader = req.headers.authorization;
+        if (_authHeader) {
+            const token = _authHeader.split(' ')[1];
+            jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
+                if (err) {
+                    console.log(err);
+                    res.status(401).json({ error: 'Unautenticated request!' });
+                } else {
+                    readFile(clients => {
+                        let result = helpers.queryData(clients, req.query.limit, req.query.page);
+                        res.status(200).send({ clients: result.data, numOfPages: result.numOfPages });
+                    }, true);
+                }
+            })
+        } else {
+            res.status(401).json({ error: 'Unautenticated request!' });
+        }
+    })
 
     app.post('/clients', (req, res) => {
         const _authHeader = req.headers.authorization;
@@ -62,14 +83,10 @@ const clientRoutes = (app, fs) => {
                             zip: req.body.zip,
                             country: req.body.country
                         };
-                        console.log('Before creation: ' + JSON.stringify(clients));
 
                         clients.push(newClient);
 
-                        console.log('After: ' + JSON.stringify(clients));
-
                         writeFile(JSON.stringify(clients), () => res.status(200).send({ data: newClient }));
-
                     }, true)
                 }
             })
@@ -89,23 +106,13 @@ const clientRoutes = (app, fs) => {
                 } else {
                     readFile(clients => {
                         const id = req.params.id;
-                        const name = req.body.name;
-                        const address = req.body.address;
-                        const city = req.body.city;
-                        const zip = req.body.zip;
-                        const country = req.body.country;
-
                         const index = clients.findIndex((obj => obj.id === parseInt(id)));
 
-                        console.log("Before update: ", clients[index]);
-
-                        clients[index].name = name;
-                        clients[index].address = address;
-                        clients[index].city = city;
-                        clients[index].zip = zip;
-                        clients[index].country = country;
-
-                        console.log("After update: ", clients[index]);
+                        clients[index].name = req.body.name;
+                        clients[index].address = req.body.address;
+                        clients[index].city = req.body.city;
+                        clients[index].zip = req.body.zip;
+                        clients[index].country = req.body.country;
 
                         writeFile(JSON.stringify(clients), () => res.status(200).send({ data: clients[index] }));
 
@@ -131,7 +138,7 @@ const clientRoutes = (app, fs) => {
                         const updated = clients.filter(item => item.id !== parseInt(id));
                         writeFile(JSON.stringify(updated), () => res.status(200).send({ data: updated }));
                     }, true);
-                }                
+                }
             });
         } else {
             res.status(401).json({ error: 'Unautenticated request!' });

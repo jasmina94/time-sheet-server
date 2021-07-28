@@ -1,5 +1,6 @@
 const helpers = {
-   makeRandomPassword,
+    makeRandomPassword,
+    queryData,
 };
 
 function makeRandomPassword(length) {
@@ -13,5 +14,22 @@ function makeRandomPassword(length) {
 
     return result;
 };
+
+function queryData(data, limit, page) {
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    if (isNaN(page))
+        page = 1;
+    if (isNaN(limit))
+        limit = 3;
+
+    let numOfPages = Math.ceil(data.length / limit);
+    let from = limit * (page - 1);
+
+    data = data.slice(from, from + limit);
+
+    return { data, numOfPages};
+}
 
 module.exports = helpers;
