@@ -5,27 +5,6 @@ const projectRoutes = (app, fs) => {
 
     const dataPath = './data/projects.json';
 
-    const readFile = (callback, returnJson = false, filePath = dataPath, encoding = 'utf8') => {
-        fs.readFile(filePath, encoding, (err, data) => {
-            if (err) {
-                throw err;
-            }
-
-            callback(returnJson ? JSON.parse(data) : data);
-        });
-    };
-
-    const writeFile = (fileData, callback, filePath = dataPath, encoding = 'utf8') => {
-        fs.writeFile(filePath, fileData, encoding, (err) => {
-            if (err) {
-                throw err;
-            }
-
-            callback();
-        });
-    };
-
-
     app.get('/projects/all', (req, res) => {
         const _authHeader = req.headers.authorization;
         if (_authHeader) {
@@ -35,11 +14,9 @@ const projectRoutes = (app, fs) => {
                     console.log(err);
                     res.status(401).json({ error: 'Unautenticated request!' });
                 } else {
-                    readFile(projects => {
-                        console.log(projects);
-
+                    helpers.readFile(fs, projects => {
                         res.status(200).send({ data: projects });
-                    }, true);
+                    }, true, dataPath);
                 }
             })
         } else {
@@ -56,11 +33,13 @@ const projectRoutes = (app, fs) => {
                     console.log(err);
                     res.status(401).json({ error: 'Unautenticated request!' });
                 } else {
-                    readFile(projects => {
+                    helpers.readFile(fs, projects => {
+
                         let result = helpers.queryData(projects, req.query.limit, req.query.page);
 
                         res.status(200).send({ projects: result.data, numOfPages: result.numOfPages });
-                    }, true);
+
+                    }, true, dataPath);
                 }
             })
         } else {
@@ -82,7 +61,7 @@ const projectRoutes = (app, fs) => {
                     const customer = clients.filter(x => x.id === parseInt(req.body.customer))[0];
                     const lead = users.filter(x => x.id === parseInt(req.body.lead))[0];
 
-                    readFile(projects => {
+                    helpers.readFile(fs, projects => {
                         const nextId = Math.max.apply(Math, projects.map(x => x.id)) + 1;
                         const newProject = {
                             id: nextId,
@@ -95,8 +74,9 @@ const projectRoutes = (app, fs) => {
 
                         projects.push(newProject);
 
-                        writeFile(JSON.stringify(projects), () => res.status(200).send({ data: newProject }));
-                    }, true);
+                        helpers.writeFile(fs, JSON.stringify(projects), () => res.status(200).send({ data: newProject }), dataPath);
+
+                    }, true, dataPath);
                 }
             });
         } else {
@@ -113,7 +93,7 @@ const projectRoutes = (app, fs) => {
                     console.log(err);
                     res.status(401).json({ error: 'Unautenticated request!' });
                 } else {
-                    readFile(projects => {
+                    helpers.readFile(projects => {
                         const id = req.params.id;
                         const name = req.body.name;
                         const lead = req.body.lead;
@@ -139,8 +119,9 @@ const projectRoutes = (app, fs) => {
 
                         console.log("After update: ", projects[index]);
 
-                        writeFile(JSON.stringify(projects), () => res.status(200).send({ data: projects[index] }));
-                    }, true);
+                        helpers.writeFile(fs, JSON.stringify(projects), () => res.status(200).send({ data: projects[index] }), dataPath);
+
+                    }, true, dataPath);
                 }
             });
         } else {
@@ -157,38 +138,19 @@ const projectRoutes = (app, fs) => {
                     console.log(err);
                     res.status(401).json({ error: 'Unautenticated request!' });
                 } else {
-                    readFile(projects => {
+                    helpers.readFile(projects => {
                         const id = req.params.id;
                         const updated = projects.filter(item => item.id !== parseInt(id));
-                        writeFile(JSON.stringify(updated), () => res.status(204).send());
-                    }, true);
+
+                        writeFile(fs, JSON.stringify(updated), () => res.status(204).send(), dataPath);
+
+                    }, true, dataPath);
                 }
             });
         } else {
             res.status(401).json({ error: 'Unautenticated request!' });
         }
     });
-
-    // app.post('/projects', (req, res) => {
-    //     const _authHeader = req.headers.authorization;
-    //     if (_authHeader) {
-    //         const token = _authHeader.split(' ')[1];
-    //         jwt.verify(token, process.env.TOKEN_SECRET, (err, data) => {
-    //             if (err) {
-    //             } else {
-    //                 readFile(projects => {
-    //                     const nexId = Math.max.apply(Math, projects.map(x => x.id)) + 1;
-    //                     const newProject = {
-    //                         id: nexId,
-    //                         name: req.body.name,
-    //                         description: req.body.description,
-    //                         city: req.body.city,
-    //                         zip: req.body.zip,
-    //                         country: req.body.country
-    //                     };
-    //                 })
-    //             }
-    // });
 }
 
 module.exports = projectRoutes;

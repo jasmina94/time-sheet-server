@@ -9,28 +9,8 @@ const authenticationRoutes = (app, fs) => {
 
     const dataPath = './data/users.json';
 
-    const readFile = (callback, returnJson = false, filePath = dataPath, encoding = 'utf8') => {
-        fs.readFile(filePath, encoding, (err, data) => {
-            if (err) {
-                throw err;
-            }
-
-            callback(returnJson ? JSON.parse(data) : data);
-        });
-    };
-
-    const writeFile = (fileData, callback, filePath = dataPath, encoding = 'utf8') => {
-        fs.writeFile(filePath, fileData, encoding, (err) => {
-            if (err) {
-                throw err;
-            }
-
-            callback();
-        });
-    };
-
     app.post('/login', (req, res) => {
-        readFile(data => {
+        helpers.readFile(fs, data => {
             const _email = req.body.email;
             const _pass = req.body.password;
             const _remember = req.body.remember;
@@ -61,10 +41,9 @@ const authenticationRoutes = (app, fs) => {
                     }
                 });
             }
-        }, true);
+        }, true, dataPath);
     });
 
-    // Verify token, return user information
     app.get('/me', (req, res) => {
         const _authHeader = req.headers.authorization;
         if (_authHeader) {
@@ -84,7 +63,7 @@ const authenticationRoutes = (app, fs) => {
 
 
     app.post('/password', (req, res) => {
-        readFile(data => {
+        helpers.readFile(fs, data => {
             const _email = req.body.email;
             const user = data.find(x => x.email === _email);
 
@@ -98,29 +77,32 @@ const authenticationRoutes = (app, fs) => {
                 bcrypt.hash(newPassword, 10, (err, hash) => {
                     if (err) {
                         console.log('Error while hashing new password...');
+
                         res.status(500).json({ error: 'Server error!' });
                     } else {
+
                         data[index].password = hash;
-                        writeFile(JSON.stringify(data), () => {
+
+                        helpers.writeFile(fs, JSON.stringify(data), () => {
                             res.status(200).json({ password: newPassword });
-                        });
+                        }, dataPath);
                     }
                 });
             }
-        }, true);
+        }, true, dataPath);
     });
 
     app.post('/register', (req, res) => {
-        readFile(data => {
+        helpers.readFile(data => {
             const newUserId = Date.now().toString();
 
-            // add the new user
             data[newUserId.toString()] = req.body;
 
-            writeFile(JSON.stringify(data, null, 2), () => {
+            writeFile(fs, JSON.stringify(data, null, 2), () => {
                 res.status(200).send('new user added');
-            });
-        }, true);
+            }, dataPath);
+            
+        }, true, dataPath);
     });
 }
 

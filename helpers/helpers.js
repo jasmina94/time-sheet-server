@@ -1,7 +1,10 @@
 const helpers = {
     makeRandomPassword,
     queryData,
+    readFile,
+    writeFile
 };
+const dataPath = './data/random.json';
 
 function makeRandomPassword(length) {
     let result = '';
@@ -15,7 +18,7 @@ function makeRandomPassword(length) {
     return result;
 };
 
-function queryData(data, limit, page) {
+function queryData(data, limit = 3, page = 1) {
     page = parseInt(page);
     limit = parseInt(limit);
 
@@ -29,7 +32,27 @@ function queryData(data, limit, page) {
 
     data = data.slice(from, from + limit);
 
-    return { data, numOfPages};
+    return { data, numOfPages };
+}
+
+function readFile(fs, callback, returnJson = false, filePath = dataPath, encoding = 'utf8') {
+    fs.readFile(filePath, encoding, (err, data) => {
+        if (err) {
+            throw err;
+        }
+
+        callback(returnJson ? JSON.parse(data) : data);
+    });
+}
+
+function writeFile(fs, fileData, callback, filePath = dataPath, encoding = 'utf8') {
+    fs.writeFile(filePath, fileData, encoding, (err) => {
+        if (err) {
+            throw err;
+        }
+
+        callback();
+    });
 }
 
 module.exports = helpers;
