@@ -34,8 +34,11 @@ const projectRoutes = (app, fs) => {
                     res.status(401).json({ error: 'Unautenticated request!' });
                 } else {
                     helpers.readFile(fs, projects => {
-
-                        let result = helpers.queryData(projects, req.query.limit, req.query.page);
+                        let result = helpers.queryData(projects, 
+                            req.query.term, 
+                            helpers.matchProject, 
+                            req.query.limit, 
+                            req.query.page);
 
                         res.status(200).send({ projects: result.data, numOfPages: result.numOfPages });
 

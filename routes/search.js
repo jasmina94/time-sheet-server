@@ -1,29 +1,6 @@
 const jwt = require('jsonwebtoken');
 const helpers = require('../helpers/helpers');
 
-const matchClient = (client, term) => {
-    let match = false;
-    if (client.name.toLowerCase().indexOf(term) !== -1
-        || client.zip.toLowerCase().indexOf(term) !== -1
-        || client.address.toLowerCase().indexOf(term) !== -1
-        || client.city.toLowerCase().indexOf(term) !== -1
-        || client.country.toLowerCase().indexOf(term) !== -1) {
-        match = true;
-    }
-
-    return match;
-}
-
-const matchProject = (project, term) => {
-    let match = false;
-    if (project.name.toLowerCase().indexOf(term) !== -1
-        || project.description.toLocaleLowerCase().indexOf(term) !== -1) {
-        match = true;
-    }
-
-    return match;
-}
-
 const searchRoute = (app, fs) => {
 
     app.get('/search/:type', (req, res) => {
@@ -46,10 +23,10 @@ const searchRoute = (app, fs) => {
 
                         if (type === 'clients') {
                             dataPath = './data/clients.json';
-                            criteria = matchClient;
+                            criteria = helpers.matchClient;
                         } else if (type === 'projects') {
                             dataPath = './data/projects.json';
-                            criteria = matchProject;
+                            criteria = helpers.matchProject;
                         } else {
                             res.status(404).send({ error: 'Requested entity not found!' });
                         }

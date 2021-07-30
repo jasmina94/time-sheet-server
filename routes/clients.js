@@ -35,7 +35,11 @@ const clientRoutes = (app, fs) => {
                     res.status(401).json({ error: 'Unautenticated request!' });
                 } else {
                     helpers.readFile(fs, clients => {
-                        let result = helpers.queryData(clients, req.query.limit, req.query.page);
+                        let result = helpers.queryData(clients, 
+                            req.query.term, 
+                            helpers.matchClient, 
+                            req.query.limit, 
+                            req.query.page);
 
                         res.status(200).send({ clients: result.data, numOfPages: result.numOfPages });
 
@@ -45,7 +49,7 @@ const clientRoutes = (app, fs) => {
         } else {
             res.status(401).json({ error: 'Unautenticated request!' });
         }
-    })
+    });
 
     app.post('/clients', (req, res) => {
         const _authHeader = req.headers.authorization;
