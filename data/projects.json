@@ -1,1 +1,86 @@
-[{"id":1,"name":"Rheaaaa","status":1,"description":"Very cool project super neeew","customer":{"id":7,"name":"Newy","address":"New Newy","city":"Newy place","zip":"101","country":"AX"},"lead":{"id":2,"email":"test@test.com","password":"$2b$10$ytzN2BOqcKM3dg77X4juXuZ5wgKDrSX04TykHNw5dDncuoJp1YYaa","firstname":"Test","lastname":"Test"}},{"id":2,"name":"Neo","status":2,"description":"Very old project","customer":{"id":6,"name":"Adam client","address":"Bond street 12","city":"Bern","zip":"222","country":"SE"},"lead":{"id":1,"email":"j.eminovski@emakina.rs","password":"$2b$10$MXWJFXRPhQz4HqzBP3YOouO1izeAyMDU6YGJlIdtFr/FgXUuZinXW","firstname":"Jasmina","lastname":"Eminovski"}},{"id":3,"name":"Novi projekat","status":1,"description":"Bla","customer":{"id":4,"name":"Emakina.RS","address":"Novosadskog sajma 2","city":"Novi Sad","zip":"21000","country":"RS"},"lead":{"id":1,"email":"j.eminovski@emakina.rs","password":"$2b$10$MXWJFXRPhQz4HqzBP3YOouO1izeAyMDU6YGJlIdtFr/FgXUuZinXW","firstname":"Jasmina","lastname":"Eminovski"}},{"id":4,"name":"My new project","status":0,"description":"React JS project","customer":{"id":21,"name":"Novica Novic","address":"Nova 12","city":"Novi Sad","zip":"21000","country":"RS"},"lead":{"id":1,"email":"j.eminovski@emakina.rs","password":"$2b$10$MXWJFXRPhQz4HqzBP3YOouO1izeAyMDU6YGJlIdtFr/FgXUuZinXW","firstname":"Jasmina","lastname":"Eminovski"}}]
+[
+    {
+        "id": 1,
+        "name": "Rheaaaa",
+        "status": 1,
+        "description": "Very cool project super neeew",
+        "customer": {
+            "id": 7,
+            "name": "Newy",
+            "address": "New Newy",
+            "city": "Newy place",
+            "zip": "101",
+            "country": "AX"
+        },
+        "lead": {
+            "id": 2,
+            "email": "test@test.com",
+            "password": "$2b$10$ytzN2BOqcKM3dg77X4juXuZ5wgKDrSX04TykHNw5dDncuoJp1YYaa",
+            "firstname": "Test",
+            "lastname": "Test"
+        }
+    },
+    {
+        "id": 2,
+        "name": "Neo",
+        "status": 2,
+        "description": "Very old project",
+        "customer": {
+            "id": 6,
+            "name": "Adam client",
+            "address": "Bond street 12",
+            "city": "Bern",
+            "zip": "222",
+            "country": "SE"
+        },
+        "lead": {
+            "id": 1,
+            "email": "j.eminovski@emakina.rs",
+            "password": "$2b$10$MXWJFXRPhQz4HqzBP3YOouO1izeAyMDU6YGJlIdtFr/FgXUuZinXW",
+            "firstname": "Jasmina",
+            "lastname": "Eminovski"
+        }
+    },
+    {
+        "id": 3,
+        "name": "Novi projekat",
+        "status": 1,
+        "description": "Bla",
+        "customer": {
+            "id": 4,
+            "name": "Emakina.RS",
+            "address": "Novosadskog sajma 2",
+            "city": "Novi Sad",
+            "zip": "21000",
+            "country": "RS"
+        },
+        "lead": {
+            "id": 1,
+            "email": "j.eminovski@emakina.rs",
+            "password": "$2b$10$MXWJFXRPhQz4HqzBP3YOouO1izeAyMDU6YGJlIdtFr/FgXUuZinXW",
+            "firstname": "Jasmina",
+            "lastname": "Eminovski"
+        }
+    },
+    {
+        "id": 4,
+        "name": "My new project",
+        "status": 0,
+        "description": "React JS project",
+        "customer": {
+            "id": 21,
+            "name": "Novica Novic",
+            "address": "Nova 12",
+            "city": "Novi Sad",
+            "zip": "21000",
+            "country": "RS"
+        },
+        "lead": {
+            "id": 1,
+            "email": "j.eminovski@emakina.rs",
+            "password": "$2b$10$MXWJFXRPhQz4HqzBP3YOouO1izeAyMDU6YGJlIdtFr/FgXUuZinXW",
+            "firstname": "Jasmina",
+            "lastname": "Eminovski"
+        }
+    }
+]

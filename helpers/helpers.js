@@ -4,7 +4,9 @@ const helpers = {
     readFile,
     writeFile,
     matchClient,
-    matchProject
+    matchProject,
+    matchClientByName,
+    matchProjectByName
 };
 const dataPath = './data/random.json';
 
@@ -94,6 +96,26 @@ function matchProject(project, term) {
         || project.description.toLocaleLowerCase().indexOf(term) !== -1) {
         match = true;
     }
+
+    return match;
+}
+
+function matchClientByName(client, letter) {
+    let match = false;
+    letter = letter.toLocaleLowerCase();
+    if (client.name.toLocaleLowerCase().startsWith(letter))
+        match = true;
+
+    return match;
+}
+
+function matchProjectByName(project, letter) {
+    let match = false;
+    letter = letter.toLocaleLowerCase();
+
+    if (project.name.toLocaleLowerCase().startsWith(letter)
+        || project.description.toLocaleLowerCase().startsWith(letter))
+        match = true;
 
     return match;
 }
