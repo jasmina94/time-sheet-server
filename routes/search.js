@@ -35,7 +35,8 @@ const searchRoute = (app, fs) => {
                         helpers.readFile(fs, data => {
                             let filtered = data.filter(x => criteria(x, term));
                             let result = helpers.queryData(filtered)
-                            res.status(200).send({ entities: result.data, numOfPages: result.numOfPages });
+
+                            res.status(200).send({ entities: result.data, numOfPages: result.numOfPages,  total: result.total });
                         }, true, dataPath);
 
                     } else {
@@ -83,7 +84,7 @@ const searchRoute = (app, fs) => {
                         helpers.readFile(fs, data => {
                             let result = helpers.queryData(data, letter, criteria, limit, page);
 
-                            res.status(200).send({ entities: result.data, numOfPages: result.numOfPages });
+                            res.status(200).send({ entities: result.data, numOfPages: result.numOfPages, total: result.total});
 
                         }, true, dataPath);
 

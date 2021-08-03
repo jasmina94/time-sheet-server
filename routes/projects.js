@@ -40,7 +40,7 @@ const projectRoutes = (app, fs) => {
                             req.query.limit, 
                             req.query.page);
 
-                        res.status(200).send({ projects: result.data, numOfPages: result.numOfPages });
+                        res.status(200).send({ projects: result.data, numOfPages: result.numOfPages, total: result.total });
 
                     }, true, dataPath);
                 }

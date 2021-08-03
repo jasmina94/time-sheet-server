@@ -41,7 +41,7 @@ const clientRoutes = (app, fs) => {
                             req.query.limit, 
                             req.query.page);
 
-                        res.status(200).send({ clients: result.data, numOfPages: result.numOfPages });
+                        res.status(200).send({ clients: result.data, numOfPages: result.numOfPages,  total: result.total});
 
                     }, true, dataPath);
                 }

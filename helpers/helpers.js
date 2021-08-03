@@ -51,10 +51,11 @@ function queryData(data, queryTerm = '', criteria = null, limit = 3, page = 1) {
     
     let numOfPages = Math.ceil(data.length / limit);
     let from = limit * (page - 1);
+    let total = data.length;
 
     data = data.slice(from, from + limit);
 
-    return { data, numOfPages };
+    return { data, numOfPages, total };
 }
 
 function readFile(fs, callback, returnJson = false, filePath = dataPath, encoding = 'utf8') {
@@ -93,7 +94,8 @@ function matchClient(client, term) {
 function matchProject(project, term) {
     let match = false;
     if (project.name.toLowerCase().indexOf(term) !== -1
-        || project.description.toLocaleLowerCase().indexOf(term) !== -1) {
+        || project.description.toLocaleLowerCase().indexOf(term) !== -1
+        || project.customer.name.toLocaleLowerCase().indexOf(term) !== -1) {
         match = true;
     }
 
