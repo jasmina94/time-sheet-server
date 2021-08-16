@@ -15,7 +15,6 @@ const clientRoutes = (app, fs) => {
                     res.status(401).json({ error: 'Unautenticated request!' });
                 } else {
                     helpers.readFile(fs, clients => {
-                        console.log(clients);
                         res.status(200).send({ data: clients });
                     }, true, dataPath);
                 }
@@ -26,128 +25,114 @@ const clientRoutes = (app, fs) => {
     });
 
     app.get('/clients', (req, res) => {
-        helpers.readFile(fs, clients => {
-            let result = helpers.queryData(clients,
-                req.query.term,
-                helpers.matchClient,
-                req.query.limit,
-                req.query.page);
+        const _authHeader = req.headers.authorization;
+        if (_authHeader) {
+            const token = _authHeader.split(' ')[1];
+            jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
+                if (err) {
+                    console.log(err);
+                    res.status(401).json({ error: 'Unautenticated request!' });
+                } else {
+                    helpers.readFile(fs, clients => {
+                        let result = helpers.queryData(clients,
+                            req.query.term,
+                            helpers.matchClient,
+                            req.query.limit,
+                            req.query.page);
 
-            res.status(200).send({ clients: result.data, numOfPages: result.numOfPages, total: result.total });
+                        res.status(200).send({ data: result.data, numOfPages: result.numOfPages, total: result.total });
 
-        }, true, dataPath);
-           
+                    }, true, dataPath);
+                }
+            })
+        } else {
+            res.status(401).json({ error: 'Unautenticated request!' });
+        }
     });
 
-app.get('/clientsss', (req, res) => {
-    const _authHeader = req.headers.authorization;
-    if (_authHeader) {
-        const token = _authHeader.split(' ')[1];
-        jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
-            if (err) {
-                console.log(err);
-                res.status(401).json({ error: 'Unautenticated request!' });
-            } else {
-                helpers.readFile(fs, clients => {
-                    let result = helpers.queryData(clients,
-                        req.query.term,
-                        helpers.matchClient,
-                        req.query.limit,
-                        req.query.page);
+    app.post('/clients', (req, res) => {
+        const _authHeader = req.headers.authorization;
+        if (_authHeader) {
+            const token = _authHeader.split(' ')[1];
+            jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
+                if (err) {
+                    console.log(err);
+                    res.status(401).json({ error: 'Unautenticated request!' });
+                } else {
+                    helpers.readFile(fs, clients => {
+                        const nextId = Math.max.apply(Math, clients.map(x => x.id)) + 1;
+                        const newClient = {
+                            id: nextId,
+                            name: req.body.name,
+                            address: req.body.address,
+                            city: req.body.city,
+                            zip: req.body.zip,
+                            country: req.body.country
+                        };
 
-                    res.status(200).send({ clients: result.data, numOfPages: result.numOfPages, total: result.total });
+                        clients.push(newClient);
 
-                }, true, dataPath);
-            }
-        })
-    } else {
-        res.status(401).json({ error: 'Unautenticated request!' });
-    }
-});
+                        helpers.writeFile(fs, JSON.stringify(clients), () => res.status(200).send({ data: newClient }), dataPath);
 
-app.post('/clients', (req, res) => {
-    const _authHeader = req.headers.authorization;
-    if (_authHeader) {
-        const token = _authHeader.split(' ')[1];
-        jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
-            if (err) {
-                console.log(err);
-                res.status(401).json({ error: 'Unautenticated request!' });
-            } else {
-                helpers.readFile(fs, clients => {
-                    const nextId = Math.max.apply(Math, clients.map(x => x.id)) + 1;
-                    const newClient = {
-                        id: nextId,
-                        name: req.body.name,
-                        address: req.body.address,
-                        city: req.body.city,
-                        zip: req.body.zip,
-                        country: req.body.country
-                    };
+                    }, true, dataPath)
+                }
+            })
+        } else {
+            res.status(401).json({ error: 'Unautenticated request!' });
+        }
+    });
 
-                    clients.push(newClient);
+    app.put('/clients/:id', (req, res) => {
+        const _authHeader = req.headers.authorization;
+        if (_authHeader) {
+            const token = _authHeader.split(' ')[1];
+            jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
+                if (err) {
+                    console.log(err);
+                    res.status(401).json({ error: 'Unautenticated request!' });
+                } else {
+                    helpers.readFile(fs, clients => {
+                        const id = req.params.id;
+                        const index = clients.findIndex((obj => obj.id === parseInt(id)));
 
-                    helpers.writeFile(fs, JSON.stringify(clients), () => res.status(200).send({ data: newClient }), dataPath);
+                        clients[index].name = req.body.name;
+                        clients[index].address = req.body.address;
+                        clients[index].city = req.body.city;
+                        clients[index].zip = req.body.zip;
+                        clients[index].country = req.body.country;
 
-                }, true, dataPath)
-            }
-        })
-    } else {
-        res.status(401).json({ error: 'Unautenticated request!' });
-    }
-});
+                        helpers.writeFile(fs, JSON.stringify(clients), () => res.status(200).send({ data: clients[index] }), dataPath);
 
-app.put('/clients/:id', (req, res) => {
-    const _authHeader = req.headers.authorization;
-    if (_authHeader) {
-        const token = _authHeader.split(' ')[1];
-        jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
-            if (err) {
-                console.log(err);
-                res.status(401).json({ error: 'Unautenticated request!' });
-            } else {
-                helpers.readFile(fs, clients => {
-                    const id = req.params.id;
-                    const index = clients.findIndex((obj => obj.id === parseInt(id)));
+                    }, true, dataPath);
+                }
+            });
+        } else {
+            res.status(401).json({ error: 'Unautenticated request!' });
+        }
+    });
 
-                    clients[index].name = req.body.name;
-                    clients[index].address = req.body.address;
-                    clients[index].city = req.body.city;
-                    clients[index].zip = req.body.zip;
-                    clients[index].country = req.body.country;
+    app.delete('/clients/:id', (req, res) => {
+        const _authHeader = req.headers.authorization;
+        if (_authHeader) {
+            const token = _authHeader.split(' ')[1];
+            jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
+                if (err) {
+                    console.log(err);
+                    res.status(401).json({ error: 'Unautenticated request!' });
+                } else {
+                    helpers.readFile(fs, clients => {
+                        const id = req.params.id;
+                        const updated = clients.filter(item => item.id !== parseInt(id));
 
-                    helpers.writeFile(fs, JSON.stringify(clients), () => res.status(200).send({ data: clients[index] }), dataPath);
+                        helpers.writeFile(fs, JSON.stringify(updated), () => res.status(200).send({ data: updated }), dataPath);
 
-                }, true, dataPath);
-            }
-        });
-    } else {
-        res.status(401).json({ error: 'Unautenticated request!' });
-    }
-});
-
-app.delete('/clients/:id', (req, res) => {
-    const _authHeader = req.headers.authorization;
-    if (_authHeader) {
-        const token = _authHeader.split(' ')[1];
-        jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
-            if (err) {
-                console.log(err);
-                res.status(401).json({ error: 'Unautenticated request!' });
-            } else {
-                helpers.readFile(fs, clients => {
-                    const id = req.params.id;
-                    const updated = clients.filter(item => item.id !== parseInt(id));
-
-                    helpers.writeFile(fs, JSON.stringify(updated), () => res.status(200).send({ data: updated }), dataPath);
-
-                }, true, dataPath);
-            }
-        });
-    } else {
-        res.status(401).json({ error: 'Unautenticated request!' });
-    }
-});
+                    }, true, dataPath);
+                }
+            });
+        } else {
+            res.status(401).json({ error: 'Unautenticated request!' });
+        }
+    });
 }
 
 module.exports = clientRoutes;
