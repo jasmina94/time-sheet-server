@@ -36,7 +36,6 @@ const authenticationRoutes = (app, fs) => {
                         res.status(200).json({ token: token });
 
                     } else {
-                        console.log(err);
                         res.status(401).json({ error: 'Incorrect password!' });
                     }
                 });
