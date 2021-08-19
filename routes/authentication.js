@@ -61,7 +61,7 @@ const authenticationRoutes = (app, fs) => {
     });
 
 
-    app.post('/password', (req, res) => {
+    app.post('/forgotPassword', (req, res) => {
         helpers.readFile(fs, data => {
             const _email = req.body.email;
             const user = data.find(x => x.email === _email);
@@ -91,6 +91,59 @@ const authenticationRoutes = (app, fs) => {
         }, true, dataPath);
     });
 
+    app.post('/changePassword', (req, res) => {
+        const _authHeader = req.headers.authorization;
+        if (_authHeader) {
+            const token = _authHeader.split(' ')[1];
+            jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
+                if (err) {
+                    res.status(401).json({ error: 'Unautenticated request!' });
+                } else {
+                    helpers.readFile(fs, users => {
+                        const decoded = jwt.decode(token);
+                        const _email = decoded.userInfo.email;
+                        const _pass = req.body.current;
+                        const _new = req.body.new;
+                        const _repeat = req.body.repeat;
+
+                        const user = users.find(x => x.email === _email);
+                        const index = users.findIndex((x => x.email === _email));
+
+                        bcrypt.compare(_pass, user.password, (err, result) => {
+                            if (result) {
+                                if (_new === _repeat) {
+                                    //hash new password
+                                    bcrypt.hash(_new, 10, (err, hash) => {
+                                        if (err) {
+                                            console.log('Error while hashing new password...');
+
+                                            res.status(500).json({ error: 'Server error!' });
+                                        } else {
+                                            users[index].password = hash;
+                                            
+                                            helpers.writeFile(fs, JSON.stringify(users), () => {
+                                                res.status(200).json({ message: 'Successfully changed password. Please login again!'});
+                                            }, dataPath);
+                                        }
+                                    })
+                                } else {
+                                    res.status(500).json({ error: 'Not matching values!' });
+                                }
+
+                            } else {
+                                console.log(err);
+                                res.status(401).json({ error: 'Error while changing password. Please check credentials!' });
+                            }
+                        });
+                    }, true, dataPath);
+
+                }
+            });
+        } else {
+            res.status(401).json({ error: 'Unautenticated request!' });
+        }
+    });
+
     app.post('/register', (req, res) => {
         helpers.readFile(data => {
             const newUserId = Date.now().toString();
@@ -100,7 +153,7 @@ const authenticationRoutes = (app, fs) => {
             writeFile(fs, JSON.stringify(data, null, 2), () => {
                 res.status(200).send('new user added');
             }, dataPath);
-            
+
         }, true, dataPath);
     });
 }
