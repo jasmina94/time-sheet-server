@@ -112,7 +112,6 @@ const authenticationRoutes = (app, fs) => {
                         bcrypt.compare(_pass, user.password, (err, result) => {
                             if (result) {
                                 if (_new === _repeat) {
-                                    //hash new password
                                     bcrypt.hash(_new, 10, (err, hash) => {
                                         if (err) {
                                             console.log('Error while hashing new password...');
